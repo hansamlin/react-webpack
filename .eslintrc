@@ -1,0 +1,31 @@
+{
+  "env": { "es6": true, "browser": true, "node": true },
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:react/jsx-runtime",
+    "plugin:react-hooks/recommended"
+  ],
+  "rules": {
+    "no-unused-vars": [
+      "error",
+      {
+        "vars": "all",
+        "args": "none",
+        "ignoreRestSiblings": false,
+        "caughtErrors": "none"
+      }
+    ],
+    "camelcase": ["error", { "properties": "never" }],
+    "no-empty": "error",
+    "no-undef": "error",
+    "react-hooks/exhaustive-deps": "error",
+    "react-hooks/rules-of-hooks": "error"
+  },
+  "parserOptions": {
+    "sourceType": "module"
+  },
+  "globals": {
+    "require": true
+  }
+}
