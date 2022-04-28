@@ -1,24 +1,18 @@
-import { useState, useEffect } from "react";
-import Select from "./src/components/select";
 import "./app.scss";
+import logo from "./public/logo512.png";
+import banner from "./public/art_museum_large.jpg";
+import Hello from "./src/components/hello";
 
 const App = () => {
-  const [value, setValue] = useState("react");
-
-  useEffect(() => {
-    console.log(value);
-  }, [value]);
-
-  const handleChange = (e) => {
-    setValue(e.target.value);
-  };
-
   return (
     <>
-      <h1>
-        Hello <span className="upper">{value}</span>!!!
-      </h1>
-      <Select value={value} handleChange={handleChange} />
+      <Hello />
+      <div className="logoPng">
+        <img src={logo} alt="Logo" className="logo" />
+      </div>
+      <div className="banner">
+        <img src={banner} alt="Banner" />
+      </div>
     </>
   );
 };

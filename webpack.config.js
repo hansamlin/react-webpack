@@ -1,19 +1,20 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-// const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
+const devMode = process.env.NODE_ENV === "development";
 
 module.exports = {
-  //這個webpack打包的對象，這裡面加上剛剛建立的index.js
   entry: {
     index: "./index.js",
   },
   mode: process.env.NODE_ENV || "development",
   output: {
-    //這裡是打包後的檔案名稱
-    filename: "static/main.[fullhash].js",
-    //打包後的路徑，這裡使用path模組的resolve()取得絕對位置，也就是目前專案的根目錄
+    filename: "static/js/main.[fullhash].js",
+    hashDigestLength: 7,
     path: path.resolve(__dirname, "build"),
+    publicPath: "/",
   },
   module: {
     rules: [
@@ -28,19 +29,97 @@ module.exports = {
       },
       {
         test: /\.(sa|sc|c)ss$/i,
-        use: ["style-loader", "css-loader", "sass-loader"],
+        exclude: /\.module\.(sc|sa|c)ss$/i,
+        use: [
+          devMode
+            ? "style-loader"
+            : {
+                loader: MiniCssExtractPlugin.loader,
+                options: {
+                  publicPath: "static/css",
+                },
+              },
+          {
+            loader: "css-loader",
+            options: {
+              sourceMap: true,
+            },
+          },
+          "sass-loader",
+        ],
+      },
+      {
+        test: /\.module\.(sa|sc|c)ss$/i,
+        use: [
+          devMode
+            ? "style-loader"
+            : {
+                loader: MiniCssExtractPlugin.loader,
+                options: {
+                  publicPath: "static/css",
+                },
+              },
+          {
+            loader: "css-loader",
+            options: {
+              importLoaders: 1,
+              modules: {
+                localIdentName: devMode
+                  ? "[path][name]__[local]--[hash:base64:5]"
+                  : "[name]__[local]--[hash:base64:5]",
+              },
+              sourceMap: true,
+            },
+          },
+          "sass-loader",
+        ],
+      },
+      {
+        test: /\.svg$/i,
+        use: [
+          {
+            loader: "url-loader",
+            options: {
+              limit: false,
+              encoding: false,
+              name: "[name].[hash:base64:7].[ext]",
+              outputPath: "static/media",
+            },
+          },
+        ],
+      },
+      {
+        test: /\.(png|jpe?g|webp|gif)$/i,
+        use: [
+          {
+            loader: "url-loader",
+            options: {
+              limit: 8096,
+              name: "[name].[hash:base64:7].[ext]",
+              outputPath: "static/media",
+            },
+          },
+        ],
       },
     ],
   },
   plugins: [
-    // new CleanWebpackPlugin(),
+    new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       hash: true,
       template: "./public/index.html",
-      inject: "body",
       favicon: "./public/favicon.ico",
     }),
-  ],
+  ].concat(
+    devMode
+      ? []
+      : [
+          new MiniCssExtractPlugin({
+            runtime: false,
+            filename: "static/css/main.[contenthash].css",
+          }),
+        ]
+  ),
   optimization: {
     minimize: true,
     minimizer: [

@@ -1,9 +1,32 @@
-.upper {
-  text-transform: capitalize;
+@keyframes rotate {
+  from {
+    transform: rotate(0);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-#select {
-  width: 100px;
-  height: 30px;
-  font-size: 1.25rem;
+.logo {
+  animation: rotate 20s infinite linear;
+}
+
+.logoPng {
+  height: 100px;
+}
+
+.logoSvg {
+  height: 100px;
+}
+
+.logoPng,
+.logoSvg {
+  img {
+    height: 100%;
+  }
+}
+
+.banner img {
+  width: 50vw;
 }
