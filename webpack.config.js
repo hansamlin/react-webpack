@@ -19,7 +19,6 @@ module.exports = {
   },
   devServer: {
     port: 8000,
-    compress: true,
   },
   module: {
     rules: [
@@ -85,11 +84,11 @@ module.exports = {
     isDevMode
       ? []
       : [
-          new MiniCssExtractPlugin({
-            runtime: false,
-            filename: 'static/css/main.[contenthash].css',
-          }),
-        ]
+        new MiniCssExtractPlugin({
+          runtime: false,
+          filename: 'static/css/main.[contenthash].css',
+        }),
+      ],
   ),
   optimization: {
     minimize: true,
