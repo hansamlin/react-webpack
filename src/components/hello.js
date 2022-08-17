@@ -1,9 +1,13 @@
-import { useState } from "react";
-import Select from "./select";
-import styles from "./hello.module.css";
+import { styled } from '@stitches/react';
+import { useState } from 'react';
+import Select from './select';
+
+const Span = styled('span', {
+  textTransform: 'capitalize',
+});
 
 const Hello = () => {
-  const [value, setValue] = useState("react");
+  const [value, setValue] = useState('react');
 
   const handleChange = (e) => {
     setValue(e.target.value);
@@ -12,11 +16,18 @@ const Hello = () => {
   return (
     <>
       <h1>
-        Hello <span className={styles.upper}>{value}</span>!!!
+        Hello
+        {' '}
+        <Span>{value}</Span>
+        !!!
       </h1>
-      <Select id={styles.select} value={value} handleChange={handleChange} />
+      <Select value={value} handleChange={handleChange} />
     </>
   );
 };
 
 export default Hello;
+
+// const Upper = styled.span`
+//   text-transform: capitalize;
+// `;

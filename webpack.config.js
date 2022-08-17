@@ -1,20 +1,25 @@
-const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const TerserPlugin = require("terser-webpack-plugin");
-const devMode = process.env.NODE_ENV === "development";
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+const webpack = require('webpack');
+
+const isDevMode = process.env.NODE_ENV === 'development';
 
 module.exports = {
-  entry: {
-    index: "./index.js",
-  },
-  mode: process.env.NODE_ENV || "development",
+  entry: './index.js',
+  devtool: 'source-map',
+  mode: isDevMode ? 'development' : 'production',
   output: {
-    filename: "static/js/main.[fullhash].js",
+    filename: 'static/js/main.[fullhash].js',
     hashDigestLength: 7,
-    path: path.resolve(__dirname, "build"),
-    publicPath: "/",
+    path: path.resolve(__dirname, 'build'),
+    publicPath: '/',
+  },
+  devServer: {
+    port: 8000,
+    compress: true,
   },
   module: {
     rules: [
@@ -23,67 +28,28 @@ module.exports = {
         exclude: /node_modules/,
         use: [
           {
-            loader: "babel-loader",
+            loader: 'babel-loader',
           },
         ],
       },
       {
-        test: /\.(sa|sc|c)ss$/i,
-        exclude: /\.module\.(sc|sa|c)ss$/i,
+        test: /\.css$/i,
         use: [
-          devMode
-            ? "style-loader"
-            : {
-                loader: MiniCssExtractPlugin.loader,
-                options: {
-                  publicPath: "static/css",
-                },
-              },
-          {
-            loader: "css-loader",
-            options: {
-              sourceMap: true,
-            },
-          },
-          "sass-loader",
-        ],
-      },
-      {
-        test: /\.module\.(sa|sc|c)ss$/i,
-        use: [
-          devMode
-            ? "style-loader"
-            : {
-                loader: MiniCssExtractPlugin.loader,
-                options: {
-                  publicPath: "static/css",
-                },
-              },
-          {
-            loader: "css-loader",
-            options: {
-              importLoaders: 1,
-              modules: {
-                localIdentName: devMode
-                  ? "[path][name]__[local]--[hash:base64:5]"
-                  : "[name]__[local]--[hash:base64:5]",
-              },
-              sourceMap: true,
-            },
-          },
-          "sass-loader",
+          isDevMode ? 'style-loader' : MiniCssExtractPlugin.loader,
+          'css-loader',
+          // 'postcss-loader',
         ],
       },
       {
         test: /\.svg$/i,
         use: [
           {
-            loader: "url-loader",
+            loader: 'url-loader',
             options: {
               limit: false,
               encoding: false,
-              name: "[name].[hash:base64:7].[ext]",
-              outputPath: "static/media",
+              name: '[name].[hash:base64:7].[ext]',
+              outputPath: 'static/media',
             },
           },
         ],
@@ -92,31 +58,36 @@ module.exports = {
         test: /\.(png|jpe?g|webp|gif)$/i,
         use: [
           {
-            loader: "url-loader",
+            loader: 'url-loader',
             options: {
               limit: 8096,
-              name: "[name].[hash:base64:7].[ext]",
-              outputPath: "static/media",
+              name: '[name].[hash:base64:7].[ext]',
+              outputPath: 'static/media',
             },
           },
         ],
       },
+      {
+        test: /\.(woff|woff2|eot|ttf)$/i,
+        use: [{ loader: 'file-loader' }],
+      },
     ],
   },
   plugins: [
+    new webpack.HotModuleReplacementPlugin(),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       hash: true,
-      template: "./public/index.html",
-      favicon: "./public/favicon.ico",
+      template: './public/index.html',
+      favicon: './public/favicon.ico',
     }),
   ].concat(
-    devMode
+    isDevMode
       ? []
       : [
           new MiniCssExtractPlugin({
             runtime: false,
-            filename: "static/css/main.[contenthash].css",
+            filename: 'static/css/main.[contenthash].css',
           }),
         ]
   ),
@@ -132,8 +103,5 @@ module.exports = {
         extractComments: false,
       }),
     ],
-  },
-  devServer: {
-    port: 8000,
   },
 };
